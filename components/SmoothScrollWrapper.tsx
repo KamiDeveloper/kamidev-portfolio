@@ -23,7 +23,6 @@ export default function SmoothScrollWrapper({
       touchMultiplier: 2,
       infinite: false,
       syncTouch: true, // Enable touch synchronization
-      touchInertiaMultiplier: 35, // Adjust touch inertia for better feel
     });
 
     let rafId: number;
