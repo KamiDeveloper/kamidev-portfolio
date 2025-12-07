@@ -18,17 +18,35 @@
 }
 
 :root {
+
   /* Lenis smooth scroll recommended setup */
   html.lenis,
   html.lenis body {
     height: auto;
     -ms-overflow-style: none;
-    scrollbar-width: none; 
+    scrollbar-width: none;
   }
 }
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+@media screen and (width <=1000px) {
+  :root {
+
+    /* Lenis smooth scroll recommended setup */
+    html.lenis,
+    html.lenis body {
+      height: auto;
+      -ms-overflow-style: auto;
+      scrollbar-width: auto;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    display: auto;
+  }
 }
 
 body {
@@ -38,6 +56,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  /* Enable touch scrolling on mobile/tablet */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y pan-x;
+  overscroll-behavior: none;
+}
+
+/* Enable native scroll on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  html, body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 
 /* Glassmorphism Utilities */

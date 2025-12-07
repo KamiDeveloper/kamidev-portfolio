@@ -11,14 +11,19 @@ export default function SmoothScrollWrapper({
   children: React.ReactNode;
 }) {
   useEffect(() => {
+    // Detect if device has touch capability
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
-      smoothWheel: true,
+      smoothWheel: !isTouchDevice, // Disable smooth wheel on touch devices
       touchMultiplier: 2,
       infinite: false,
+      syncTouch: true, // Enable touch synchronization
+      touchInertiaMultiplier: 35, // Adjust touch inertia for better feel
     });
 
     let rafId: number;
