@@ -18,7 +18,7 @@ export default function Works() {
       category: dict.works.projects.alvinGamesStore.category,
       description: dict.works.projects.alvinGamesStore.desc,
       tech: ["Next.js 16", "TypeScript", "Firebase", "Vertex AI", "PWA"],
-      image: "/images/projects/alvin-games-store-main.jpg",
+      image: "/images/projects/alvin-games-store-main.webp",
     },
     {
       id: "02",
@@ -34,7 +34,7 @@ export default function Works() {
       category: dict.works.projects.hadoukenDojo.category,
       description: dict.works.projects.hadoukenDojo.desc,
       tech: ["React 18", "JavaScript", "Supabase", "Tailwind"],
-      image: "/images/projects/hadouken-dojo-main.jpg",
+      image: "/images/projects/hadouken-dojo-main.webp",
     },
   ];
 
