@@ -64,7 +64,9 @@ body {
 
 /* Enable native scroll on touch devices */
 @media (hover: none) and (pointer: coarse) {
-  html, body {
+
+  html,
+  body {
     overflow-y: auto;
     overflow-x: hidden;
   }

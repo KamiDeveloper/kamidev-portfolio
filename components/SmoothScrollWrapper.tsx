@@ -13,7 +13,7 @@ export default function SmoothScrollWrapper({
   useEffect(() => {
     // Detect if device has touch capability
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
