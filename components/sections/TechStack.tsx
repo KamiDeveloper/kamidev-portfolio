@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useGSAPContext } from "@/hooks/use-gsap-context";
 import { useLanguage } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
@@ -8,6 +8,9 @@ import { TECH_LOGOS, type TechLogoKey } from "./StackLogos";
 
 export default function TechStack() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const [logosLoaded, setLogosLoaded] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const { performAnimation, gsap, ScrollTrigger } = useGSAPContext(containerRef);
   const { dict } = useLanguage();
 
@@ -24,28 +27,61 @@ export default function TechStack() {
     { name: "Kotlin", category: dict.stack.items.kotlin, color: "#7f52ff", logo: "kotlin" as TechLogoKey },
   ];
 
+  // Preload logos before rendering
   useEffect(() => {
-    const cleanup = performAnimation(() => {
-      // 1. Initial State
-      gsap.set(".tech-card", { y: 80, opacity: 0, scale: 0.9, rotateX: -15 });
-      gsap.set(".tech-header", { y: 50, opacity: 0 });
-      gsap.set(".tech-number", { opacity: 0, x: -20 });
-      gsap.set(".tech-logo-bg", { scale: 0, rotation: -180, opacity: 0 });
+    const preloadLogos = async () => {
+      try {
+        // Wait a frame to ensure DOM is ready
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        setLogosLoaded(true);
+      } catch (error) {
+        console.error("Error preloading logos:", error);
+        setLogosLoaded(true); // Proceed anyway
+      }
+    };
 
-      // 2. Header Reveal
-      gsap.to(".tech-header", {
+    preloadLogos();
+  }, []);
+
+  // Setup animations only after logos are loaded
+  useEffect(() => {
+    if (!logosLoaded || !containerRef.current || !cardsRef.current) return;
+
+    const cleanup = performAnimation(() => {
+      const container = containerRef.current;
+      const cards = cardsRef.current;
+      if (!container || !cards) return;
+
+      const techCards = gsap.utils.toArray<HTMLElement>(".tech-card");
+      const techNumbers = gsap.utils.toArray<HTMLElement>(".tech-number");
+      const techLogos = gsap.utils.toArray<HTMLElement>(".tech-logo-bg");
+      const techHeader = container.querySelector(".tech-header");
+
+      if (!techCards.length || !techHeader) return;
+
+      // 1. Initial State - Set immediately
+      gsap.set(techCards, { y: 80, opacity: 0, scale: 0.9, rotateX: -15 });
+      gsap.set(techHeader, { y: 50, opacity: 0 });
+      gsap.set(techNumbers, { opacity: 0, x: -20 });
+      gsap.set(techLogos, { scale: 0, rotation: -180, opacity: 0 });
+
+      // 2. Header Reveal - Only when in viewport
+      gsap.to(techHeader, {
         y: 0,
         opacity: 1,
         duration: 1.2,
         ease: "power4.out",
         scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
+          trigger: container,
+          start: "top 75%",
+          end: "top 25%",
+          once: true,
+          onEnter: () => !hasAnimated && setHasAnimated(true),
         },
       });
 
       // 3. Grid Entrance - Cards with 3D effect
-      gsap.to(".tech-card", {
+      gsap.to(techCards, {
         y: 0,
         opacity: 1,
         scale: 1,
@@ -58,27 +94,29 @@ export default function TechStack() {
         },
         ease: "back.out(1.4)",
         scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 70%",
-          toggleActions: "play none none none",
+          trigger: cards,
+          start: "top 80%",
+          end: "top 20%",
+          once: true,
         },
       });
 
       // 4. Numbers fade in
-      gsap.to(".tech-number", {
+      gsap.to(techNumbers, {
         opacity: 1,
         x: 0,
         duration: 0.6,
         stagger: 0.08,
         ease: "power2.out",
         scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 70%",
+          trigger: cards,
+          start: "top 80%",
+          once: true,
         },
       });
 
       // 5. Logos spin in
-      gsap.to(".tech-logo-bg", {
+      gsap.to(techLogos, {
         scale: 1,
         rotation: 0,
         opacity: 0.15,
@@ -86,13 +124,14 @@ export default function TechStack() {
         stagger: 0.08,
         ease: "back.out(1.2)",
         scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 70%",
+          trigger: cards,
+          start: "top 80%",
+          once: true,
         },
       });
 
-      // 6. Continuous subtle floating animation for cards
-      gsap.utils.toArray<HTMLElement>(".tech-card").forEach((card, i) => {
+      // 6. Continuous subtle floating animation for cards - only after they enter
+      techCards.forEach((card, i) => {
         gsap.to(card, {
           y: "+=10",
           duration: 2 + (i * 0.1),
@@ -100,20 +139,27 @@ export default function TechStack() {
           yoyo: true,
           ease: "sine.inOut",
           delay: i * 0.1,
+          scrollTrigger: {
+            trigger: card,
+            start: "top 90%",
+            once: true,
+          },
         });
       });
     });
 
-    // Force ScrollTrigger refresh after content changes
+    // Refresh ScrollTrigger after animations setup
     const timer = setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 100);
+      if (ScrollTrigger) {
+        ScrollTrigger.refresh();
+      }
+    }, 150);
 
     return () => {
       clearTimeout(timer);
       cleanup?.();
     };
-  }, [performAnimation, gsap, ScrollTrigger, dict]);
+  }, [logosLoaded, performAnimation, gsap, ScrollTrigger, dict, hasAnimated]);
 
   return (
     <section
@@ -152,7 +198,7 @@ export default function TechStack() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {TECH_ITEMS.map((item, index) => (
             <div
               key={index}
@@ -179,7 +225,7 @@ export default function TechStack() {
               </div>
 
               {/* Logo background - HUGE and subtle */}
-              {TECH_LOGOS[item.logo] && (
+              {TECH_LOGOS[item.logo] && logosLoaded && (
                 <div
                   className="tech-logo-bg absolute inset-0 w-full h-full opacity-0 transition-all duration-700 group-hover:opacity-[0.08] group-hover:scale-110 flex items-center justify-center"
                   style={{
