@@ -56,6 +56,9 @@ export default function ProjectModal({
     const modalRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const wheelDebounceRef = useRef<NodeJS.Timeout | null>(null);
+    const isWheelDebouncing = useRef(false);
+    const currentPhaseRef = useRef(0);
+    const totalPhasesRef = useRef(TOTAL_PHASES);
     const { performAnimation, gsap } = useGSAPContext(modalRef);
 
     // Custom hooks
@@ -84,6 +87,11 @@ export default function ProjectModal({
         totalPhases: TOTAL_PHASES,
         imagesCount: images.length,
     });
+
+    // Update phase ref
+    useEffect(() => {
+        currentPhaseRef.current = currentPhase;
+    }, [currentPhase]);
 
     // Reset phase when modal opens
     useEffect(() => {
@@ -124,21 +132,40 @@ export default function ProjectModal({
             e.preventDefault();
             e.stopPropagation();
 
-            // Debounce to prevent rapid phase changes
-            if (wheelDebounceRef.current) return;
+            // Check if debouncing
+            if (isWheelDebouncing.current) return;
 
             const delta = e.deltaY;
+            const currentPhaseValue = currentPhaseRef.current;
+            const totalPhases = totalPhasesRef.current;
 
             if (Math.abs(delta) > 10) {
-                if (delta > 0 && canGoNext) {
-                    goToNext();
-                } else if (delta < 0 && canGoPrev) {
-                    goToPrev();
+                let newPhase = currentPhaseValue;
+
+                if (delta > 0 && currentPhaseValue < totalPhases - 1) {
+                    // Scroll down - next phase
+                    newPhase = currentPhaseValue + 1;
+                } else if (delta < 0 && currentPhaseValue > 0) {
+                    // Scroll up - previous phase
+                    newPhase = currentPhaseValue - 1;
                 }
 
-                wheelDebounceRef.current = setTimeout(() => {
-                    wheelDebounceRef.current = null;
-                }, 600);
+                if (newPhase !== currentPhaseValue) {
+                    goToPhase(newPhase);
+
+                    // Set debounce flag
+                    isWheelDebouncing.current = true;
+
+                    // Clear debounce after delay
+                    if (wheelDebounceRef.current) {
+                        clearTimeout(wheelDebounceRef.current);
+                    }
+
+                    wheelDebounceRef.current = setTimeout(() => {
+                        isWheelDebouncing.current = false;
+                        wheelDebounceRef.current = null;
+                    }, 600);
+                }
             }
         };
 
@@ -149,9 +176,11 @@ export default function ProjectModal({
             modalElement.removeEventListener("wheel", handleWheel);
             if (wheelDebounceRef.current) {
                 clearTimeout(wheelDebounceRef.current);
+                wheelDebounceRef.current = null;
             }
+            isWheelDebouncing.current = false;
         };
-    }, [isOpen, isMobile, canGoNext, canGoPrev, goToNext, goToPrev]);
+    }, [isOpen, isMobile, goToPhase]);
 
     // Close animation
     const handleClose = useCallback(() => {
@@ -310,8 +339,19 @@ export default function ProjectModal({
 
                 {/* Desktop: Two-column layout */}
                 <div className="hidden md:flex h-full">
-                    {/* Left Column: Content (25%) */}
-                    <div className="w-1/4 flex flex-col border-r border-white/10 bg-bg-base">
+                    {/* Left Column: Carousel (75%) */}
+                    <div className="w-3/4 relative group border-r border-white/10">
+                        <ImageCarousel
+                            images={images}
+                            currentIndex={currentImageIndex}
+                            autoPlay={true}
+                            interval={5000}
+                            isMobile={false}
+                        />
+                    </div>
+
+                    {/* Right Column: Content (25%) */}
+                    <div className="w-1/4 flex flex-col bg-bg-base">
                         <div className="flex-1 flex flex-col justify-center p-8 lg:p-12 overflow-y-auto">
                             {renderPhaseContent()}
                         </div>
@@ -373,17 +413,6 @@ export default function ProjectModal({
                                 </p>
                             )}
                         </div>
-                    </div>
-
-                    {/* Right Column: Carousel (75%) */}
-                    <div className="w-3/4 relative group">
-                        <ImageCarousel
-                            images={images}
-                            currentIndex={currentImageIndex}
-                            autoPlay={true}
-                            interval={5000}
-                            isMobile={false}
-                        />
                     </div>
                 </div>
 
