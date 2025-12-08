@@ -59,8 +59,14 @@ export default function TechStack() {
 
       if (!techCards.length || !techHeader) return;
 
-      // 1. Initial State - Set immediately
-      gsap.set(techCards, { y: 80, opacity: 0, scale: 0.9, rotateX: -15 });
+      // 1. Initial State - Set immediately with clearProps to avoid conflicts
+      gsap.set(techCards, {
+        y: 80,
+        opacity: 0,
+        scale: 0.9,
+        rotateX: -15,
+        transformOrigin: "center center"
+      });
       gsap.set(techHeader, { y: 50, opacity: 0 });
       gsap.set(techNumbers, { opacity: 0, x: -20 });
       gsap.set(techLogos, { scale: 0, rotation: -180, opacity: 0 });
@@ -74,14 +80,21 @@ export default function TechStack() {
         scrollTrigger: {
           trigger: container,
           start: "top 75%",
-          end: "top 25%",
           once: true,
           onEnter: () => !hasAnimated && setHasAnimated(true),
         },
       });
 
       // 3. Grid Entrance - Cards with 3D effect
-      gsap.to(techCards, {
+      const cardsTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: cards,
+          start: "top 80%",
+          once: true,
+        },
+      });
+
+      cardsTimeline.to(techCards, {
         y: 0,
         opacity: 1,
         scale: 1,
@@ -93,12 +106,7 @@ export default function TechStack() {
           ease: "power2.out"
         },
         ease: "back.out(1.4)",
-        scrollTrigger: {
-          trigger: cards,
-          start: "top 80%",
-          end: "top 20%",
-          once: true,
-        },
+        clearProps: "all", // Clear all props after animation completes
       });
 
       // 4. Numbers fade in
@@ -108,6 +116,7 @@ export default function TechStack() {
         duration: 0.6,
         stagger: 0.08,
         ease: "power2.out",
+        clearProps: "x,opacity",
         scrollTrigger: {
           trigger: cards,
           start: "top 80%",
@@ -123,6 +132,7 @@ export default function TechStack() {
         duration: 1.2,
         stagger: 0.08,
         ease: "back.out(1.2)",
+        clearProps: "scale,rotation",
         scrollTrigger: {
           trigger: cards,
           start: "top 80%",
@@ -130,22 +140,8 @@ export default function TechStack() {
         },
       });
 
-      // 6. Continuous subtle floating animation for cards - only after they enter
-      techCards.forEach((card, i) => {
-        gsap.to(card, {
-          y: "+=10",
-          duration: 2 + (i * 0.1),
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          delay: i * 0.1,
-          scrollTrigger: {
-            trigger: card,
-            start: "top 90%",
-            once: true,
-          },
-        });
-      });
+      // 6. Continuous subtle floating animation - removed to prevent conflicts
+      // The floating animation was causing the stuck behavior
     });
 
     // Refresh ScrollTrigger after animations setup
@@ -198,11 +194,12 @@ export default function TechStack() {
           </p>
         </div>
 
-        <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div ref={cardsRef} className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {TECH_ITEMS.map((item, index) => (
             <div
               key={index}
-              className="tech-card group relative p-8 rounded-3xl bg-gradient-to-br from-surface-secondary/40 to-surface-secondary/20 border border-white/10 hover:border-white/30 transition-all duration-700 overflow-hidden backdrop-blur-sm"
+              className="tech-card group relative p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-surface-secondary/40 to-surface-secondary/20 border border-white/10 hover:border-white/30 transition-all duration-700 overflow-hidden backdrop-blur-sm will-change-transform"
+              style={{ transformOrigin: "center center" }}
             >
               {/* Animated gradient overlay */}
               <div
@@ -237,13 +234,13 @@ export default function TechStack() {
                 </div>
               )}
 
-              <div className="relative z-10 flex flex-col h-full justify-between min-h-[160px]">
-                <div className="flex justify-between items-start mb-12">
-                  <span className="tech-number text-xs font-mono text-text-secondary/60 uppercase tracking-[0.2em] font-bold">
+              <div className="relative z-10 flex flex-col h-full justify-between min-h-[140px] sm:min-h-[160px]">
+                <div className="flex justify-between items-start mb-8 sm:mb-12">
+                  <span className="tech-number text-[10px] sm:text-xs font-mono text-text-secondary/60 uppercase tracking-[0.2em] font-bold">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <div
-                    className="w-3 h-3 rounded-full shadow-[0_0_15px_currentColor] group-hover:shadow-[0_0_25px_currentColor] transition-all duration-500"
+                    className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shadow-[0_0_15px_currentColor] group-hover:shadow-[0_0_25px_currentColor] transition-all duration-500"
                     style={{
                       color: item.color,
                       backgroundColor: item.color,
@@ -253,14 +250,14 @@ export default function TechStack() {
 
                 <div>
                   <h3
-                    className="font-display text-3xl font-bold text-text-primary mb-3 group-hover:translate-x-2 transition-all duration-500 leading-none"
+                    className="font-display text-2xl sm:text-3xl font-bold text-text-primary mb-2 sm:mb-3 group-hover:translate-x-2 transition-all duration-500 leading-none"
                     style={{
                       textShadow: `0 0 30px ${item.color}00, 0 0 60px ${item.color}00`,
                     }}
                   >
                     {item.name}
                   </h3>
-                  <p className="text-xs text-text-secondary/80 uppercase tracking-[0.15em] font-semibold group-hover:text-text-secondary transition-colors duration-500">
+                  <p className="text-[10px] sm:text-xs text-text-secondary/80 uppercase tracking-[0.15em] font-semibold group-hover:text-text-secondary transition-colors duration-500">
                     {item.category}
                   </p>
                 </div>

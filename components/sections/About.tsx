@@ -217,7 +217,7 @@ export default function About() {
               src="/images/kami-profpic.webp"
               alt="Jorge Medrano - KamiDev Background"
               fill
-              className="object-cover object-center grayscale opacity-20"
+              className="object-cover object-center grayscale opacity-80"
               priority
             />
             <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/80 to-transparent" />
