@@ -24,7 +24,16 @@ export const dictionary = {
       systems: "Systems",
       scalability: "Scalability",
       eng_approach: "Engineering Approach",
-      future_proof: "Future Proof"
+      future_proof: "Future Proof",
+      artist_category: "The Artist",
+      artist_name: "KamiDev",
+      artist_bio: "Code becomes liquid in my hands, transforming ideas into digital experiences that flow with elegance and purpose. I'm Jorge Medrano, known in the digital world as 'KamiDev', a Full Stack developer passionate about creating interfaces that not only work, but also inspire.",
+      experience_label: "Experience",
+      experience_value: "2+ Years",
+      projects_label: "Projects",
+      projects_value: "10+ and more incoming",
+      status_label: "Status",
+      status_value: "Available for Hire"
     },
     stack: {
       category: "Engineering",
@@ -120,7 +129,16 @@ export const dictionary = {
       systems: "Sistemas",
       scalability: "Escalabilidad",
       eng_approach: "Enfoque de Ingeniería",
-      future_proof: "Preparado para el Futuro y lo que venga"
+      future_proof: "Preparado para el Futuro y lo que venga",
+      artist_category: "El Artista",
+      artist_name: "KamiDev",
+      artist_bio: "El código se vuelve líquido en mis manos, transformando ideas en experiencias digitales que fluyen con elegancia y propósito. Soy Jorge Medrano, conocido en el mundo digital como 'KamiDev', un desarrollador Full Stack apasionado por crear interfaces que no solo funcionan, sino que también inspiran.",
+      experience_label: "Experiencia",
+      experience_value: "2+ Años",
+      projects_label: "Proyectos",
+      projects_value: "10+ y más en camino",
+      status_label: "Estado",
+      status_value: "Disponible para Contratar"
     },
     stack: {
       category: "Ingeniería",
@@ -216,7 +234,16 @@ export const dictionary = {
       systems: "システム",
       scalability: "スケーラビリティ",
       eng_approach: "エンジニアリングアプローチ",
-      future_proof: "将来性"
+      future_proof: "将来性",
+      artist_category: "アーティスト",
+      artist_name: "KamiDev",
+      artist_bio: "私の手の中でコードは液体になり、アイデアを優雅さと目的を持って流れるデジタル体験に変えます。私はホルヘ・メドラノ、デジタル世界では「KamiDev」として知られています。機能するだけでなく、インスピレーションを与えるインターフェースを作ることに情熱を持つフルスタック開発者です。",
+      experience_label: "経験",
+      experience_value: "2年以上",
+      projects_label: "プロジェクト",
+      projects_value: "10以上、さらに増加中",
+      status_label: "ステータス",
+      status_value: "採用可能"
     },
     stack: {
       category: "エンジニアリング",
