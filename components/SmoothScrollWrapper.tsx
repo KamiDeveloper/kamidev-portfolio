@@ -15,14 +15,14 @@ export default function SmoothScrollWrapper({
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: isTouchDevice ? 0.8 : 1.2, // Shorter duration for touch devices
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: !isTouchDevice, // Disable smooth wheel on touch devices
-      touchMultiplier: 2,
+      touchMultiplier: isTouchDevice ? 1 : 2, // Reduce multiplier for touch devices
       infinite: false,
-      syncTouch: true, // Enable touch synchronization
+      syncTouch: false, // Disable touch sync for more direct control
     });
 
     let rafId: number;
