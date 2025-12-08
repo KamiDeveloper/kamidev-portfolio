@@ -128,13 +128,19 @@ export default function Works() {
               <div className="w-full md:w-3/5 group relative aspect-16/10 overflow-hidden rounded-sm">
                 <div className="absolute inset-0 bg-gray-900 animate-pulse" /> {/* Placeholder while loading */}
                 <div className="project-img absolute inset-0 w-full h-full">
-                  {/* Using unoptimized for external demo images to ensure they load without config issues */}
                   <Image
                     src={project.image}
                     alt={project.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1400px) 60vw, 840px"
+                    quality={85}
+                    priority={index === 0}
                     className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
-                    unoptimized
+                    onError={(e) => {
+                      // Fallback in case of image load error
+                      const target = e.target as HTMLImageElement;
+                      target.style.opacity = "0.5";
+                    }}
                   />
                 </div>
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
