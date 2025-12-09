@@ -12,7 +12,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navItems = [
     { name: dict.navbar.about, href: "#about", id: "about" },
@@ -165,7 +165,7 @@ export default function Navbar() {
             href="/"
             className="text-xl font-display font-bold text-text-primary tracking-tighter hover:text-white transition-colors"
           >
-            JM
+            KD
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
