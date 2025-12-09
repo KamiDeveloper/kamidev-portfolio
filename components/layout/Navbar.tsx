@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n-context";
+import Image from "next/image";
 
 export default function Navbar() {
   const { dict } = useLanguage();
@@ -163,9 +164,9 @@ export default function Navbar() {
         <div className="glass-panel rounded-full px-6 py-3 flex items-center gap-8 shadow-2xl bg-bg-base/80 backdrop-blur-md border border-white/10">
           <Link
             href="/"
-            className="text-xl font-display font-bold text-text-primary tracking-tighter hover:text-white transition-colors"
+            className="opacity-90 hover:opacity-100 transition-opacity"
           >
-            KD
+            <Image src="/images/logo/logo-small.webp" alt="Logo" width={20} height={20} sizes="(max-width: 768px) 15px, 15px" />
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
