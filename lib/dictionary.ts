@@ -231,6 +231,18 @@ export const dictionary = {
       email_ph: "Email",
       vision_ph: "Project Vision",
       submit: "Send Transmission",
+      loading: "Sending Transmission...",
+      success: "Transmitted!",
+      successMessage: "Message sent successfully! I'll get back to you soon.",
+      validation: {
+        name: "Name is required (min 2 characters)",
+        email: "Valid email is required",
+        message: "Message must be at least 10 characters",
+      },
+      errors: {
+        rateLimit: "Too many requests. Please wait a moment.",
+        generic: "Something went wrong. Please try again.",
+      },
       copyright: "LIQUID ARCHITECTURE.",
     },
     preloader: {
@@ -467,6 +479,18 @@ export const dictionary = {
       email_ph: "Correo",
       vision_ph: "Visión del Proyecto",
       submit: "Enviar Transmisión",
+      loading: "Enviando Transmisión...",
+      success: "¡Transmitido!",
+      successMessage: "¡Mensaje enviado con éxito! Te responderé pronto.",
+      validation: {
+        name: "El nombre es requerido (mín 2 caracteres)",
+        email: "Se requiere un email válido",
+        message: "El mensaje debe tener al menos 10 caracteres",
+      },
+      errors: {
+        rateLimit: "Demasiadas solicitudes. Por favor espera un momento.",
+        generic: "Algo salió mal. Por favor intenta de nuevo.",
+      },
       copyright: "ARQUITECTURA LÍQUIDA.",
     },
     preloader: {
@@ -703,6 +727,18 @@ export const dictionary = {
       email_ph: "メール",
       vision_ph: "プロジェクトのビジョン",
       submit: "送信",
+      loading: "送信中...",
+      success: "送信完了！",
+      successMessage: "メッセージが正常に送信されました！すぐに返信いたします。",
+      validation: {
+        name: "名前が必要です（2文字以上）",
+        email: "有効なメールアドレスが必要です",
+        message: "メッセージは10文字以上必要です",
+      },
+      errors: {
+        rateLimit: "リクエストが多すぎます。しばらくお待ちください。",
+        generic: "エラーが発生しました。もう一度お試しください。",
+      },
       copyright: "リキッド・アーキテクチャ",
     },
     preloader: {
