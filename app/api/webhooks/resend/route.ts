@@ -18,17 +18,43 @@ async function processAndNotifyEmail(emailData: any) {
   try {
     const { db, messaging } = getFirebaseAdmin();
 
+    // Parse from field - can be "Name <email@example.com>" or just "email@example.com"
+    let fromAddress = { email: '', name: '' };
+    if (typeof emailData.from === 'string') {
+      const match = emailData.from.match(/^(.+?)\s*<(.+)>$/);
+      if (match) {
+        fromAddress = { name: match[1].trim(), email: match[2].trim() };
+      } else {
+        fromAddress = { email: emailData.from, name: '' };
+      }
+    } else if (emailData.from && typeof emailData.from === 'object') {
+      fromAddress = { 
+        email: emailData.from.email || '', 
+        name: emailData.from.name || '' 
+      };
+    }
+
+    // Process attachments to a consistent format
+    const attachments = (emailData.attachments || []).map((att: any) => ({
+      id: att.id || `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      filename: att.filename || 'attachment',
+      contentType: att.content_type || 'application/octet-stream',
+      size: att.size || 0,
+    }));
+
     // 1. Save email to Firestore
     const emailDoc = {
       emailId: emailData.email_id,
-      from: emailData.from,
+      from: fromAddress,
       to: emailData.to || [],
       cc: emailData.cc || [],
       bcc: emailData.bcc || [],
-      subject: emailData.subject,
+      subject: emailData.subject || '(No subject)',
       messageId: emailData.message_id,
-      attachments: emailData.attachments || [],
-      receivedAt: new Date(),
+      textBody: emailData.text || emailData.text_body || '',
+      htmlBody: emailData.html || emailData.html_body || '',
+      attachments: attachments,
+      receivedAt: new Date().toISOString(),
       status: 'unread',
       replies: [],
       source: 'resend_webhook',
@@ -37,49 +63,69 @@ async function processAndNotifyEmail(emailData: any) {
     const docRef = await db.collection('emails').add(emailDoc);
     console.log('Email saved to Firestore:', docRef.id);
 
-    // 2. Send push notification via FCM
-    try {
-      const userDoc = await db.collection('users').doc('owner').get();
-      const fcmToken = userDoc.data()?.fcmToken;
+    // 2. Get unread count for badge
+    const unreadSnapshot = await db.collection('emails')
+      .where('status', '==', 'unread')
+      .count()
+      .get();
+    const unreadCount = unreadSnapshot.data().count;
 
-      if (fcmToken) {
-        await messaging.send({
-          token: fcmToken,
-          notification: {
-            title: `📧 ${emailData.from}`,
-            body: emailData.subject,
-          },
-          data: {
-            type: 'new_email',
-            emailId: docRef.id,
-            from: emailData.from,
-            subject: emailData.subject,
-          },
-          android: {
-            priority: 'high',
-            notification: {
-              channelId: 'emails',
-              priority: 'high',
-              defaultSound: true,
-              defaultVibrateTimings: true,
-            },
-          },
-          apns: {
-            payload: {
-              aps: {
-                badge: 1,
-                sound: 'default',
-                contentAvailable: true,
+    // 3. Send push notification via FCM
+    try {
+      // Get all registered FCM tokens
+      const tokensSnapshot = await db.collection('fcm_tokens').get();
+      
+      if (!tokensSnapshot.empty) {
+        const tokens = tokensSnapshot.docs.map(doc => doc.data().token).filter(Boolean);
+        
+        for (const token of tokens) {
+          try {
+            await messaging.send({
+              token: token,
+              notification: {
+                title: `📧 ${fromAddress.name || fromAddress.email}`,
+                body: emailData.subject || '(No subject)',
               },
-            },
-          },
-        });
-        console.log('Push notification sent successfully');
+              data: {
+                type: 'new_email',
+                emailId: docRef.id,
+                from: fromAddress.email,
+                subject: emailData.subject || '',
+              },
+              android: {
+                priority: 'high',
+                notification: {
+                  channelId: 'emails',
+                  priority: 'high',
+                  defaultSound: true,
+                  defaultVibrateTimings: true,
+                },
+              },
+              apns: {
+                payload: {
+                  aps: {
+                    badge: unreadCount,
+                    sound: 'default',
+                    contentAvailable: true,
+                  },
+                },
+              },
+            });
+            console.log('Push notification sent to token:', token.substring(0, 20) + '...');
+          } catch (fcmError: any) {
+            console.error('FCM notification failed for token:', fcmError.message);
+            // Remove invalid token
+            if (fcmError.code === 'messaging/registration-token-not-registered') {
+              await db.collection('fcm_tokens').where('token', '==', token).get()
+                .then(snapshot => snapshot.docs.forEach(doc => doc.ref.delete()));
+            }
+          }
+        }
       } else {
-        console.log('No FCM token found for user');
+        console.log('No FCM tokens registered');
       }
     } catch (fcmError) {
-      console.error('FCM notification failed:', fcmError);
+      console.error('FCM notification process failed:', fcmError);
       // Don't fail the whole process if FCM fails
     }
 
