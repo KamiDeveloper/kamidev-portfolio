@@ -228,7 +228,7 @@ export default function Footer() {
       case "success":
         return (
           <span className="flex items-center gap-2">
-            <svg className="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
             {dict.footer.success || "Sent!"}
@@ -250,7 +250,7 @@ export default function Footer() {
         {status === "success" && (
           <div 
             ref={successRef}
-            className="w-full max-w-lg mb-8 p-6 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400"
+            className="w-full max-w-lg mb-8 p-6 rounded-xl bg-neutral-500/10 border border-neutral-500/30 text-neutral-400"
           >
             <div className="flex items-center justify-center gap-3">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -265,7 +265,7 @@ export default function Footer() {
         {status === "error" && errorMessage && (
           <div 
             ref={errorRef}
-            className="w-full max-w-lg mb-8 p-6 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400"
+            className="w-full max-w-lg mb-8 p-6 rounded-xl bg-neutral-500/10 border border-neutral-500/30 text-neutral-400"
           >
             <div className="flex items-center justify-center gap-3">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -298,15 +298,15 @@ export default function Footer() {
               disabled={status === "loading"}
               className={cn(
                 "w-full bg-transparent border-b py-4 text-xl text-text-primary placeholder:text-text-secondary/50 focus:outline-none transition-colors disabled:opacity-50",
-                errors.name ? "border-red-500" : "border-white/20 focus:border-accent-glow"
+                errors.name ? "border-neutral-500" : "border-white/20 focus:border-accent-glow"
               )}
             />
             <div className={cn(
               "absolute bottom-0 left-0 h-px transition-all duration-500",
-              errors.name ? "w-full bg-red-500" : "w-0 bg-accent-glow group-focus-within:w-full"
+              errors.name ? "w-full bg-neutral-500" : "w-0 bg-accent-glow group-focus-within:w-full"
             )} />
             {errors.name && (
-              <p className="absolute -bottom-6 left-0 text-sm text-red-500">{errors.name}</p>
+              <p className="absolute -bottom-6 left-0 text-sm text-neutral-500">{errors.name}</p>
             )}
           </div>
 
@@ -320,15 +320,15 @@ export default function Footer() {
               disabled={status === "loading"}
               className={cn(
                 "w-full bg-transparent border-b py-4 text-xl text-text-primary placeholder:text-text-secondary/50 focus:outline-none transition-colors disabled:opacity-50",
-                errors.email ? "border-red-500" : "border-white/20 focus:border-accent-glow"
+                errors.email ? "border-neutral-500" : "border-white/20 focus:border-accent-glow"
               )}
             />
             <div className={cn(
               "absolute bottom-0 left-0 h-px transition-all duration-500",
-              errors.email ? "w-full bg-red-500" : "w-0 bg-accent-glow group-focus-within:w-full"
+              errors.email ? "w-full bg-neutral-500" : "w-0 bg-accent-glow group-focus-within:w-full"
             )} />
             {errors.email && (
-              <p className="absolute -bottom-6 left-0 text-sm text-red-500">{errors.email}</p>
+              <p className="absolute -bottom-6 left-0 text-sm text-neutral-500">{errors.email}</p>
             )}
           </div>
 
@@ -342,15 +342,15 @@ export default function Footer() {
               disabled={status === "loading"}
               className={cn(
                 "w-full bg-transparent border-b py-4 text-xl text-text-primary placeholder:text-text-secondary/50 focus:outline-none transition-colors resize-none disabled:opacity-50",
-                errors.message ? "border-red-500" : "border-white/20 focus:border-accent-glow"
+                errors.message ? "border-neutral-500" : "border-white/20 focus:border-accent-glow"
               )}
             />
             <div className={cn(
               "absolute bottom-0 left-0 h-px transition-all duration-500",
-              errors.message ? "w-full bg-red-500" : "w-0 bg-accent-glow group-focus-within:w-full"
+              errors.message ? "w-full bg-neutral-500" : "w-0 bg-accent-glow group-focus-within:w-full"
             )} />
             {errors.message && (
-              <p className="absolute -bottom-6 left-0 text-sm text-red-500">{errors.message}</p>
+              <p className="absolute -bottom-6 left-0 text-sm text-neutral-500">{errors.message}</p>
             )}
           </div>
 
@@ -365,7 +365,7 @@ export default function Footer() {
               className={cn(
                 "px-12 py-4 rounded-full bg-surface-primary text-text-primary border border-white/20 transition-colors font-bold tracking-widest uppercase overflow-hidden relative",
                 status === "loading" ? "cursor-wait" : "hover:bg-white/5",
-                status === "success" && "border-green-500/50 bg-green-500/10"
+                status === "success" && "border-neutral-500/50 bg-neutral-500/10"
               )}
             >
               <span className="relative z-10">{getButtonContent()}</span>
