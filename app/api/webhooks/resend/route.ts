@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { getFirebaseAdmin } from "@/lib/firebase-admin";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -12,7 +13,84 @@ function hexToBuffer(hex: string): ArrayBuffer {
   return bytes.buffer;
 }
 
-// Forward received email to your actual inbox
+// Save email to Firestore and send push notification
+async function processAndNotifyEmail(emailData: any) {
+  try {
+    const { db, messaging } = getFirebaseAdmin();
+
+    // 1. Save email to Firestore
+    const emailDoc = {
+      emailId: emailData.email_id,
+      from: emailData.from,
+      to: emailData.to || [],
+      cc: emailData.cc || [],
+      bcc: emailData.bcc || [],
+      subject: emailData.subject,
+      messageId: emailData.message_id,
+      attachments: emailData.attachments || [],
+      receivedAt: new Date(),
+      status: 'unread',
+      replies: [],
+      source: 'resend_webhook',
+    };
+
+    const docRef = await db.collection('emails').add(emailDoc);
+    console.log('Email saved to Firestore:', docRef.id);
+
+    // 2. Send push notification via FCM
+    try {
+      const userDoc = await db.collection('users').doc('owner').get();
+      const fcmToken = userDoc.data()?.fcmToken;
+
+      if (fcmToken) {
+        await messaging.send({
+          token: fcmToken,
+          notification: {
+            title: `📧 ${emailData.from}`,
+            body: emailData.subject,
+          },
+          data: {
+            type: 'new_email',
+            emailId: docRef.id,
+            from: emailData.from,
+            subject: emailData.subject,
+          },
+          android: {
+            priority: 'high',
+            notification: {
+              channelId: 'emails',
+              priority: 'high',
+              defaultSound: true,
+              defaultVibrateTimings: true,
+            },
+          },
+          apns: {
+            payload: {
+              aps: {
+                badge: 1,
+                sound: 'default',
+                contentAvailable: true,
+              },
+            },
+          },
+        });
+        console.log('Push notification sent successfully');
+      } else {
+        console.log('No FCM token found for user');
+      }
+    } catch (fcmError) {
+      console.error('FCM notification failed:', fcmError);
+      // Don't fail the whole process if FCM fails
+    }
+
+    return { success: true, docId: docRef.id };
+  } catch (error) {
+    console.error('Error processing email:', error);
+    return { success: false, error };
+  }
+}
+
+// Forward received email to your actual inbox (backup method)
 async function forwardEmail(emailData: any) {
   const { from, subject, to, cc, bcc } = emailData;
   
@@ -195,12 +273,16 @@ export async function POST(request: NextRequest) {
         email_id: emailData.email_id,
       });
 
-      // Forward the email to your personal inbox
+      // Save to Firestore and send push notification
+      const processResult = await processAndNotifyEmail(emailData);
+
+      // Also forward email as backup
       await forwardEmail(emailData);
 
       return NextResponse.json({
         success: true,
-        message: "Email received and forwarded",
+        message: "Email received, saved, and forwarded",
+        firestoreDocId: processResult.docId,
       });
     }
 
