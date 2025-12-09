@@ -135,8 +135,8 @@ export async function POST(request: Request) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: "KamiDev Portfolio <noreply@kamidev.app>",
-      to: ["contact@kamidev.app"],
+      from: "KamiDev Portfolio <contact@kamidev.app>",
+      to: ["jorgemedrano@kamidev.app"],
       replyTo: sanitizedEmail,
       subject: `🚀 New Portfolio Message from ${sanitizedName}`,
       html: `
