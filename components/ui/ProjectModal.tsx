@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useMemo, useCallback } from "react";
+import { useRef, useEffect, useMemo, useCallback, useState } from "react";
 import { useGSAPContext } from "@/hooks/use-gsap-context";
 import { useModalScrollLock } from "@/hooks/use-modal-scroll-lock";
 import { useDeviceDetection } from "@/hooks/use-device-detection";
@@ -55,10 +55,13 @@ export default function ProjectModal({
 }: ProjectModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const wheelDebounceRef = useRef<NodeJS.Timeout | null>(null);
+    const phaseContentRef = useRef<HTMLDivElement>(null);
+    const wheelDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isWheelDebouncing = useRef(false);
     const currentPhaseRef = useRef(0);
     const totalPhasesRef = useRef(TOTAL_PHASES);
+    const phaseAnimationRef = useRef<gsap.core.Timeline | null>(null);
+    const [isPhaseAnimating, setIsPhaseAnimating] = useState(false);
     const { performAnimation, gsap } = useGSAPContext(modalRef);
 
     // Custom hooks
@@ -83,6 +86,7 @@ export default function ProjectModal({
         goToPrev,
         canGoNext,
         canGoPrev,
+        forceReset: resetPhaseNavigation,
     } = usePhaseNavigation({
         totalPhases: TOTAL_PHASES,
         imagesCount: images.length,
@@ -97,14 +101,16 @@ export default function ProjectModal({
     useEffect(() => {
         if (isOpen) {
             goToPhase(0);
+            setIsPhaseAnimating(false);
         }
     }, [isOpen, goToPhase]);
 
-    // Swipe gestures for mobile
-    const { handleTouchStart, handleTouchMove, handleTouchEnd } = useSwipeGesture({
+    // Swipe gestures for mobile with debounce protection
+    const { handleTouchStart, handleTouchMove, handleTouchEnd, forceReset: resetSwipe } = useSwipeGesture({
         onSwipeLeft: goToNext,
         onSwipeRight: goToPrev,
         threshold: 75,
+        debounceMs: 500,
     });
 
     // Handle escape key
@@ -182,15 +188,28 @@ export default function ProjectModal({
         };
     }, [isOpen, isMobile, goToPhase]);
 
-    // Close animation
+    // Close animation with proper cleanup
     const handleClose = useCallback(() => {
+        // Kill any ongoing phase animations
+        if (phaseAnimationRef.current) {
+            phaseAnimationRef.current.kill();
+            phaseAnimationRef.current = null;
+        }
+
+        // Reset swipe gesture state
+        resetSwipe?.();
+
         if (!modalRef.current || !contentRef.current) {
             onClose();
             return;
         }
 
         const tl = gsap.timeline({
-            onComplete: onClose,
+            onComplete: () => {
+                // Reset phase navigation on close
+                resetPhaseNavigation?.();
+                onClose();
+            },
         });
 
         tl.to(contentRef.current, {
@@ -209,7 +228,7 @@ export default function ProjectModal({
             },
             "-=0.1"
         );
-    }, [gsap, onClose]);
+    }, [gsap, onClose, resetSwipe, resetPhaseNavigation]);
 
     // Entrance animations
     useEffect(() => {
@@ -235,60 +254,101 @@ export default function ProjectModal({
         return cleanup;
     }, [isOpen, project, isInitialized, performAnimation, gsap]);
 
-    // Phase transition animations
+    // Phase transition animations - Fixed to prevent bounce effect
     useEffect(() => {
-        if (!isOpen || !project) return;
+        if (!isOpen || !project || !phaseContentRef.current) return;
+
+        // Kill any existing phase animation to prevent conflicts
+        if (phaseAnimationRef.current) {
+            phaseAnimationRef.current.kill();
+            phaseAnimationRef.current = null;
+        }
+
+        // Set animating state
+        setIsPhaseAnimating(true);
 
         const cleanup = performAnimation(() => {
-            gsap.from(".phase-content", {
-                opacity: 0,
-                x: -20,
+            const phaseElement = phaseContentRef.current;
+            if (!phaseElement) return;
+
+            // Kill any tweens on this element
+            gsap.killTweensOf(phaseElement);
+            
+            // Set initial state immediately (no animation)
+            gsap.set(phaseElement, { opacity: 0, x: -20 });
+
+            // Create timeline for smooth entrance
+            phaseAnimationRef.current = gsap.timeline({
+                onComplete: () => {
+                    setIsPhaseAnimating(false);
+                    phaseAnimationRef.current = null;
+                }
+            });
+
+            phaseAnimationRef.current.to(phaseElement, {
+                opacity: 1,
+                x: 0,
                 duration: 0.4,
                 ease: "power2.out",
             });
         });
 
-        return cleanup;
+        return () => {
+            if (phaseAnimationRef.current) {
+                phaseAnimationRef.current.kill();
+                phaseAnimationRef.current = null;
+            }
+            cleanup?.();
+        };
     }, [currentPhase, isOpen, project, performAnimation, gsap]);
 
-    // Render phase content
+    // Render phase content with ref for animations
     const renderPhaseContent = () => {
         if (!project) return null;
 
-        switch (currentPhase) {
-            case 0:
-                return (
-                    <OverviewPhase
-                        title={project.title}
-                        category={project.category}
-                        fullDescription={project.fullDescription}
-                        metrics={project.metrics}
-                    />
-                );
-            case 1:
-                return (
-                    <ChallengesPhase
-                        challenges={project.challenges}
-                        solutions={project.solutions}
-                    />
-                );
-            case 2:
-                return (
-                    <TechPhase
-                        technologies={project.technologies}
-                        features={project.features}
-                    />
-                );
-            case 3:
-                return (
-                    <CTAPhase
-                        title={project.title}
-                        links={project.links}
-                    />
-                );
-            default:
-                return null;
-        }
+        const content = (() => {
+            switch (currentPhase) {
+                case 0:
+                    return (
+                        <OverviewPhase
+                            title={project.title}
+                            category={project.category}
+                            fullDescription={project.fullDescription}
+                            metrics={project.metrics}
+                        />
+                    );
+                case 1:
+                    return (
+                        <ChallengesPhase
+                            challenges={project.challenges}
+                            solutions={project.solutions}
+                        />
+                    );
+                case 2:
+                    return (
+                        <TechPhase
+                            technologies={project.technologies}
+                            
+                        />
+                    );
+                case 3:
+                    return (
+                        <CTAPhase
+                            title={project.title}
+                            links={project.links}
+                            features={project.features}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        })();
+
+        return (
+            <div ref={phaseContentRef} className="phase-content">
+                {content}
+            </div>
+        );
     };
 
     if (!isOpen || !project) return null;
@@ -296,7 +356,7 @@ export default function ProjectModal({
     return (
         <div
             ref={modalRef}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm"
             onClick={handleClose}
             role="dialog"
             aria-modal="true"

@@ -38,7 +38,7 @@ export default function Works() {
         features: projects.alvinGamesStore.features || [],
         images: {
           main: "/images/projects/alvin-games-store-main.webp",
-          screenshots: [],
+          screenshots: ["/images/projects/alvin-games-store/alvin-g-1.webp", "/images/projects/alvin-games-store/alvin-g-2.webp", "/images/projects/alvin-games-store/alvin-g-3.webp", "/images/projects/alvin-games-store/alvin-g-4.webp"],
         },
         links: {
           live: PROJECT_URLS.alvinGamesStore,

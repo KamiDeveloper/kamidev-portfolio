@@ -6,10 +6,9 @@
 
 interface TechPhaseProps {
     technologies: { name: string; purpose: string }[];
-    features: string[];
 }
 
-export default function TechPhase({ technologies, features }: TechPhaseProps) {
+export default function TechPhase({ technologies }: TechPhaseProps) {
     return (
         <div className="phase-content space-y-8 animate-fade-in">
             {/* Technologies Section */}
@@ -33,26 +32,6 @@ export default function TechPhase({ technologies, features }: TechPhaseProps) {
                             </div>
                         ))}
                     </div>
-                </div>
-            )}
-
-            {/* Features Section */}
-            {features && features.length > 0 && (
-                <div>
-                    <h4 className="text-xl font-display font-bold text-text-primary mb-4">
-                        Key Features
-                    </h4>
-                    <ul className="space-y-2">
-                        {features.map((feature, index) => (
-                            <li
-                                key={index}
-                                className="flex gap-3 text-text-secondary text-sm leading-relaxed"
-                            >
-                                <span className="text-accent-glow mt-1 flex-shrink-0">•</span>
-                                <span>{feature}</span>
-                            </li>
-                        ))}
-                    </ul>
                 </div>
             )}
         </div>

@@ -1,10 +1,11 @@
 /**
  * Image Carousel component with auto-play and swipe support
+ * Handles both external index control and internal navigation
  */
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -20,58 +21,110 @@ interface ImageCarouselProps {
 
 export default function ImageCarousel({
     images,
-    currentIndex,
+    currentIndex: externalIndex,
     onIndexChange,
     autoPlay = true,
     interval = 5000,
     isMobile = false,
     className,
 }: ImageCarouselProps) {
+    // Internal state for carousel - syncs with external but can also be controlled independently
+    const [internalIndex, setInternalIndex] = useState(externalIndex);
     const [isHovered, setIsHovered] = useState(false);
     const [imageLoadError, setImageLoadError] = useState<Set<number>>(new Set());
-    const autoPlayTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const autoPlayTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const lastExternalIndex = useRef(externalIndex);
 
     // Handle single image case
     const isSingleImage = images.length <= 1;
+    const safeImagesLength = Math.max(1, images.length);
 
-    // Auto-play logic
+    // Sync internal index when external index changes (from phase navigation)
     useEffect(() => {
-        if (!autoPlay || isSingleImage || isHovered || isMobile || !onIndexChange) {
+        if (externalIndex !== lastExternalIndex.current) {
+            setInternalIndex(externalIndex);
+            lastExternalIndex.current = externalIndex;
+        }
+    }, [externalIndex]);
+
+    // Auto-play logic - works independently of phase navigation
+    useEffect(() => {
+        // Clear any existing timer
+        if (autoPlayTimerRef.current) {
+            clearInterval(autoPlayTimerRef.current);
+            autoPlayTimerRef.current = null;
+        }
+
+        // Don't auto-play if conditions aren't met
+        if (!autoPlay || isSingleImage || isHovered || isMobile) {
             return;
         }
 
         autoPlayTimerRef.current = setInterval(() => {
-            const nextIndex = (currentIndex + 1) % images.length;
-            onIndexChange(nextIndex);
+            setInternalIndex((prev) => {
+                const nextIndex = (prev + 1) % safeImagesLength;
+                // Notify parent of change if callback provided
+                onIndexChange?.(nextIndex);
+                return nextIndex;
+            });
         }, interval);
 
         return () => {
             if (autoPlayTimerRef.current) {
                 clearInterval(autoPlayTimerRef.current);
+                autoPlayTimerRef.current = null;
             }
         };
-    }, [autoPlay, currentIndex, images.length, interval, isHovered, isMobile, isSingleImage, onIndexChange]);
+    }, [autoPlay, safeImagesLength, interval, isHovered, isMobile, isSingleImage, onIndexChange]);
 
-    // Navigate to specific image
-    const goToImage = (index: number) => {
-        if (index >= 0 && index < images.length && onIndexChange) {
-            onIndexChange(index);
+    // Navigate to specific image (circular navigation)
+    const goToImage = useCallback((index: number) => {
+        if (isSingleImage) return;
+        
+        // Normalize index for circular navigation
+        let normalizedIndex = index;
+        if (index < 0) {
+            normalizedIndex = safeImagesLength - 1;
+        } else if (index >= safeImagesLength) {
+            normalizedIndex = 0;
         }
-    };
+        
+        setInternalIndex(normalizedIndex);
+        onIndexChange?.(normalizedIndex);
+    }, [safeImagesLength, isSingleImage, onIndexChange]);
+
+    // Navigate to next image (circular)
+    const goToNext = useCallback(() => {
+        goToImage((internalIndex + 1) % safeImagesLength);
+    }, [internalIndex, safeImagesLength, goToImage]);
+
+    // Navigate to previous image (circular)
+    const goToPrev = useCallback(() => {
+        goToImage((internalIndex - 1 + safeImagesLength) % safeImagesLength);
+    }, [internalIndex, safeImagesLength, goToImage]);
 
     // Handle image load error
-    const handleImageError = (index: number) => {
+    const handleImageError = useCallback((index: number) => {
         setImageLoadError((prev) => new Set(prev).add(index));
-    };
+    }, []);
 
     // Get safe image source
-    const getImageSrc = (index: number) => {
+    const getImageSrc = useCallback((index: number) => {
         if (imageLoadError.has(index)) {
             // Fallback to first image if available
             return images[0] || "/placeholder-image.png";
         }
-        return images[index];
-    };
+        return images[index] || "/placeholder-image.png";
+    }, [images, imageLoadError]);
+
+    // Safety check for empty images array
+    if (!images || images.length === 0) {
+        return (
+            <div className={cn("relative w-full h-full bg-surface-primary flex items-center justify-center", className)}>
+                <span className="text-text-secondary">No images available</span>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -83,10 +136,10 @@ export default function ImageCarousel({
             <div className="relative w-full h-full overflow-hidden">
                 {images.map((image, index) => (
                     <div
-                        key={index}
+                        key={`${image}-${index}`}
                         className={cn(
                             "absolute inset-0 transition-opacity duration-700 ease-in-out",
-                            index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                            index === internalIndex ? "opacity-100 z-10" : "opacity-0 z-0"
                         )}
                     >
                         <Image
@@ -114,8 +167,8 @@ export default function ImageCarousel({
                             key={index}
                             onClick={() => goToImage(index)}
                             className={cn(
-                                "transition-all duration-300 rounded-full",
-                                index === currentIndex
+                                "transition-all duration-300 rounded-full cursor-pointer",
+                                index === internalIndex
                                     ? "w-8 h-2 bg-accent-glow"
                                     : "w-2 h-2 bg-white/40 hover:bg-white/60"
                             )}
@@ -129,13 +182,13 @@ export default function ImageCarousel({
             {!isMobile && !isSingleImage && (
                 <>
                     <button
-                        onClick={() => goToImage((currentIndex - 1 + images.length) % images.length)}
+                        onClick={goToPrev}
                         className={cn(
                             "absolute left-4 top-1/2 -translate-y-1/2 z-30",
                             "w-10 h-10 flex items-center justify-center",
                             "bg-black/50 hover:bg-black/70 backdrop-blur-sm",
                             "border border-white/20 rounded-full",
-                            "transition-all duration-300",
+                            "transition-all duration-300 cursor-pointer",
                             "opacity-0 group-hover:opacity-100",
                             isHovered && "opacity-100"
                         )}
@@ -157,13 +210,13 @@ export default function ImageCarousel({
                     </button>
 
                     <button
-                        onClick={() => goToImage((currentIndex + 1) % images.length)}
+                        onClick={goToNext}
                         className={cn(
                             "absolute right-4 top-1/2 -translate-y-1/2 z-30",
                             "w-10 h-10 flex items-center justify-center",
                             "bg-black/50 hover:bg-black/70 backdrop-blur-sm",
                             "border border-white/20 rounded-full",
-                            "transition-all duration-300",
+                            "transition-all duration-300 cursor-pointer",
                             "opacity-0 group-hover:opacity-100",
                             isHovered && "opacity-100"
                         )}
@@ -188,8 +241,8 @@ export default function ImageCarousel({
 
             {/* Image Counter */}
             {!isSingleImage && (
-                <div className="absolute top-6 right-6 z-30 px-3 py-1 bg-black/60 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs font-mono">
-                    {currentIndex + 1} / {images.length}
+                <div className="absolute top-6 left-6 z-30 px-3 py-1 bg-black/60 backdrop-blur-sm border border-white/20 rounded-full text-white text-xs font-mono">
+                    {internalIndex + 1} / {images.length}
                 </div>
             )}
         </div>

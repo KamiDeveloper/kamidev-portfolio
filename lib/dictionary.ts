@@ -97,19 +97,15 @@ export const dictionary = {
             "Multi-bank QR payment integration",
             "AI-powered receipt verification",
             "Real-time inventory management",
-            "Advanced product filtering and search",
             "Order tracking system",
             "Admin dashboard with analytics",
-            "Offline browsing capability",
-            "Push notifications for offers",
-            "Wishlist and cart persistence",
             "Multi-image product gallery"
           ],
           metrics: [
-            { label: "Load Time", value: "< 1.2s" },
-            { label: "AI Accuracy", value: "95%" },
-            { label: "Products", value: "500+" },
-            { label: "Orders/Day", value: "50+" }
+            { label: "Load Time", value: "< 1.1s" },
+            { label: "AI Accuracy", value: "98%" },
+            { label: "Products", value: "50+" },
+            { label: "Orders/Day", value: "10+" }
           ]
         },
         triadaAi: {
@@ -243,7 +239,7 @@ export const dictionary = {
         rateLimit: "Too many requests. Please wait a moment.",
         generic: "Something went wrong. Please try again.",
       },
-      copyright: "LIQUID ARCHITECTURE.",
+      copyright: "FULL STACK DEVELOPER",
     },
     preloader: {
       text: "Constructing Reality",
@@ -345,19 +341,16 @@ export const dictionary = {
             "Integración de pagos QR multi-banco",
             "Verificación de comprobantes con IA",
             "Gestión de inventario en tiempo real",
-            "Filtrado y búsqueda avanzada de productos",
             "Sistema de seguimiento de pedidos",
             "Dashboard admin con analíticas",
-            "Capacidad de navegación offline",
             "Notificaciones push para ofertas",
-            "Persistencia de wishlist y carrito",
             "Galería multi-imagen de productos"
           ],
           metrics: [
-            { label: "Tiempo de Carga", value: "< 1.2s" },
-            { label: "Precisión IA", value: "95%" },
-            { label: "Productos", value: "500+" },
-            { label: "Pedidos/Día", value: "50+" }
+            { label: "Tiempo de Carga", value: "< 1.1s" },
+            { label: "Precisión IA", value: "98%" },
+            { label: "Productos", value: "50+" },
+            { label: "Pedidos/Día", value: "10+" }
           ]
         },
         triadaAi: {
@@ -491,7 +484,7 @@ export const dictionary = {
         rateLimit: "Demasiadas solicitudes. Por favor espera un momento.",
         generic: "Algo salió mal. Por favor intenta de nuevo.",
       },
-      copyright: "ARQUITECTURA LÍQUIDA.",
+      copyright: "DESARROLLADOR FULL STACK",
     },
     preloader: {
       text: "Construyendo Realidad",
@@ -593,19 +586,15 @@ export const dictionary = {
             "マルチバンクQR決済統合",
             "AI搭載の領収書検証",
             "リアルタイム在庫管理",
-            "高度な製品フィルタリングと検索",
             "注文追跡システム",
             "分析付き管理ダッシュボード",
-            "オフライン閲覧機能",
-            "オファーのプッシュ通知",
-            "ウィッシュリストとカートの永続性",
             "マルチ画像製品ギャラリー"
           ],
           metrics: [
-            { label: "読み込み時間", value: "< 1.2s" },
-            { label: "AI精度", value: "95%" },
-            { label: "製品数", value: "500+" },
-            { label: "注文/日", value: "50+" }
+            { label: "読み込み時間", value: "< 1.1s" },
+            { label: "AI精度", value: "98%" },
+            { label: "製品数", value: "50+" },
+            { label: "注文/日", value: "10+" }
           ]
         },
         triadaAi: {
@@ -739,7 +728,7 @@ export const dictionary = {
         rateLimit: "リクエストが多すぎます。しばらくお待ちください。",
         generic: "エラーが発生しました。もう一度お試しください。",
       },
-      copyright: "リキッド・アーキテクチャ",
+      copyright: "フルスタック開発者",
     },
     preloader: {
       text: "現実を構築中",

@@ -5,6 +5,7 @@
 "use client";
 
 interface CTAPhaseProps {
+    features: string[];
     title: string;
     links: {
         live: string;
@@ -12,9 +13,28 @@ interface CTAPhaseProps {
     };
 }
 
-export default function CTAPhase({ title, links }: CTAPhaseProps) {
+export default function CTAPhase({ title, links, features }: CTAPhaseProps) {
     return (
         <div className="phase-content space-y-8 animate-fade-in">
+            {/* Features Section */}
+            {features && features.length > 0 && (
+                <div>
+                    <h4 className="text-xl font-display font-bold text-text-primary mb-4">
+                        Key Features
+                    </h4>
+                    <ul className="space-y-2">
+                        {features.map((feature, index) => (
+                            <li
+                                key={index}
+                                className="flex gap-3 text-text-secondary text-sm leading-relaxed"
+                            >
+                                <span className="text-accent-glow mt-1 flex-shrink-0">•</span>
+                                <span>{feature}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
             {/* Title */}
             <div>
                 <h4 className="text-2xl font-display font-bold text-text-primary mb-2">
