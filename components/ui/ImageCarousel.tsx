@@ -156,7 +156,7 @@ export default function ImageCarousel({
                 ))}
 
                 {/* Gradient Overlay for better text visibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-20 pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent z-20 pointer-events-none" />
             </div>
 
             {/* Image Indicators - Only show if multiple images */}

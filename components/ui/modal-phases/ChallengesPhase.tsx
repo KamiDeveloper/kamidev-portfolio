@@ -56,7 +56,7 @@ export default function ChallengesPhase({
                             </span>
                         </div>
                         {/* Hover Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-linear-to-r from-red-500/0 via-red-500/5 to-red-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                     </button>
                 ) : (
                     // Expanded Challenges List
@@ -74,7 +74,7 @@ export default function ChallengesPhase({
                                         animationDelay: `${index * 50}ms`,
                                     }}
                                 >
-                                    <span className="text-red-500 mt-1 flex-shrink-0">
+                                    <span className="text-red-500 mt-1 shrink-0">
                                         →
                                     </span>
                                     <span>{challenge}</span>
@@ -115,7 +115,7 @@ export default function ChallengesPhase({
                             </span>
                         </div>
                         {/* Hover Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/5 to-green-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-linear-to-r from-green-500/0 via-green-500/5 to-green-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                     </button>
                 ) : (
                     // Expanded Solutions List
@@ -133,7 +133,7 @@ export default function ChallengesPhase({
                                         animationDelay: `${index * 50}ms`,
                                     }}
                                 >
-                                    <span className="text-green-500 mt-1 flex-shrink-0">
+                                    <span className="text-green-500 mt-1 shrink-0">
                                         ✓
                                     </span>
                                     <span>{solution}</span>

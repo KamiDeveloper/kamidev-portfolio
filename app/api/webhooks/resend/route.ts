@@ -72,57 +72,57 @@ async function processAndNotifyEmail(emailData: any) {
 
     // 3. Send push notification via FCM
     try {
-      // Get all registered FCM tokens
-      const tokensSnapshot = await db.collection('fcm_tokens').get();
+      // Get FCM token from owner user document
+      const ownerDoc = await db.collection('users').doc('owner').get();
+      const ownerData = ownerDoc.data();
+      const token = ownerData?.fcmToken;
       
-      if (!tokensSnapshot.empty) {
-        const tokens = tokensSnapshot.docs.map(doc => doc.data().token).filter(Boolean);
-        
-        for (const token of tokens) {
-          try {
-            await messaging.send({
-              token: token,
+      if (token) {
+        try {
+          await messaging.send({
+            token: token,
+            notification: {
+              title: `📧 ${fromAddress.name || fromAddress.email}`,
+              body: emailData.subject || '(No subject)',
+            },
+            data: {
+              type: 'new_email',
+              emailId: docRef.id,
+              from: fromAddress.email,
+              subject: emailData.subject || '',
+            },
+            android: {
+              priority: 'high',
               notification: {
-                title: `📧 ${fromAddress.name || fromAddress.email}`,
-                body: emailData.subject || '(No subject)',
-              },
-              data: {
-                type: 'new_email',
-                emailId: docRef.id,
-                from: fromAddress.email,
-                subject: emailData.subject || '',
-              },
-              android: {
+                channelId: 'emails',
                 priority: 'high',
-                notification: {
-                  channelId: 'emails',
-                  priority: 'high',
-                  defaultSound: true,
-                  defaultVibrateTimings: true,
+                defaultSound: true,
+                defaultVibrateTimings: true,
+              },
+            },
+            apns: {
+              payload: {
+                aps: {
+                  badge: unreadCount,
+                  sound: 'default',
+                  contentAvailable: true,
                 },
               },
-              apns: {
-                payload: {
-                  aps: {
-                    badge: unreadCount,
-                    sound: 'default',
-                    contentAvailable: true,
-                  },
-                },
-              },
+            },
+          });
+          console.log('Push notification sent successfully');
+        } catch (fcmError: any) {
+          console.error('FCM notification failed:', fcmError.message);
+          // Remove invalid token
+          if (fcmError.code === 'messaging/registration-token-not-registered') {
+            await db.collection('users').doc('owner').update({
+              fcmToken: null,
+              updatedAt: new Date(),
             });
-            console.log('Push notification sent to token:', token.substring(0, 20) + '...');
-          } catch (fcmError: any) {
-            console.error('FCM notification failed for token:', fcmError.message);
-            // Remove invalid token
-            if (fcmError.code === 'messaging/registration-token-not-registered') {
-              await db.collection('fcm_tokens').where('token', '==', token).get()
-                .then(snapshot => snapshot.docs.forEach(doc => doc.ref.delete()));
-            }
           }
         }
       } else {
-        console.log('No FCM tokens registered');
+        console.log('No FCM token registered for owner');
       }
     } catch (fcmError) {
       console.error('FCM notification process failed:', fcmError);
@@ -142,9 +142,16 @@ async function forwardEmail(emailData: any) {
   
   try {
     // Send notification to your actual email
+    const forwardEmail = process.env.FORWARD_EMAIL;
+    
+    if (!forwardEmail) {
+      console.warn('FORWARD_EMAIL not configured, skipping email forwarding');
+      return false;
+    }
+    
     const { data, error } = await resend.emails.send({
       from: "KamiDev Inbox <contact@kamidev.app>",
-      to: ["personal.medrano@gmail.com"], 
+      to: [forwardEmail], 
       replyTo: from,
       subject: `📧 Forwarded: ${subject}`,
       html: `

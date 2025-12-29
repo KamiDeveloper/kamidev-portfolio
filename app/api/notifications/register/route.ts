@@ -1,18 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
-
-// Verify authentication token
-function verifyAuth(request: NextRequest): boolean {
-  const authHeader = request.headers.get("authorization");
-  const apiKey = process.env.PERSONAL_APP_API_KEY;
-  
-  if (!apiKey) {
-    console.error("PERSONAL_APP_API_KEY not configured");
-    return false;
-  }
-  
-  return authHeader === `Bearer ${apiKey}`;
-}
+import { verifyAuth } from "@/lib/auth-middleware";
 
 // POST: Register FCM token for push notifications
 export async function POST(request: NextRequest) {

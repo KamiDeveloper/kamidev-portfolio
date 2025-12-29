@@ -2,21 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { getFirebaseAdmin } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { verifyAuth } from "@/lib/auth-middleware";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Verify authentication token
-function verifyAuth(request: NextRequest): boolean {
-  const authHeader = request.headers.get("authorization");
-  const apiKey = process.env.PERSONAL_APP_API_KEY;
-  
-  if (!apiKey) {
-    console.error("PERSONAL_APP_API_KEY not configured");
-    return false;
-  }
-  
-  return authHeader === `Bearer ${apiKey}`;
-}
 
 export async function POST(request: NextRequest) {
   if (!verifyAuth(request)) {

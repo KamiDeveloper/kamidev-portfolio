@@ -479,7 +479,7 @@ export default function ProjectModal({
                 {/* Mobile: Vertical layout */}
                 <div className="md:hidden flex flex-col h-full">
                     {/* Carousel (40vh) */}
-                    <div className="h-[40vh] relative flex-shrink-0">
+                    <div className="h-[40vh] relative shrink-0">
                         <ImageCarousel
                             images={images}
                             currentIndex={currentImageIndex}
