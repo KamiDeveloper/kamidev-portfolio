@@ -37,7 +37,7 @@ export default function SystemArchitecture() {
         if (!ctx) return;
 
         let isInitialized = false;
-        let resizeTimeout: NodeJS.Timeout | null = null;
+        let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
         // Setup canvas dimensions with proper scaling
         const updateSize = () => {

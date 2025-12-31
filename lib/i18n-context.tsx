@@ -16,7 +16,7 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
   const [isInitialized, setIsInitialized] = useState(false);
-  const refreshTimeoutRef = React.useRef<NodeJS.Timeout[]>([]);
+  const refreshTimeoutRef = React.useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     // Check localStorage on client mount

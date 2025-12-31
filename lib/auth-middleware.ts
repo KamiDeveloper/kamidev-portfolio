@@ -23,10 +23,17 @@ export function verifyAuth(request: NextRequest): boolean {
   const authHeader = request.headers.get("authorization");
   const apiKey = process.env.PERSONAL_APP_API_KEY;
   
+  // Debug logging (remove in production)
+  console.log("[Auth] Header received:", authHeader ? `Bearer ${authHeader.substring(7, 15)}...` : 'none');
+  console.log("[Auth] Expected key:", apiKey ? `${apiKey.substring(0, 8)}...` : 'NOT SET');
+  
   if (!apiKey) {
     console.error("PERSONAL_APP_API_KEY not configured");
     return false;
   }
   
-  return authHeader === `Bearer ${apiKey}`;
+  const isValid = authHeader === `Bearer ${apiKey}`;
+  console.log("[Auth] Valid:", isValid);
+  
+  return isValid;
 }
