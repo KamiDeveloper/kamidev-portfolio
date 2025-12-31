@@ -433,7 +433,7 @@ export default function SystemArchitecture() {
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-full rounded-lg overflow-hidden border border-white/20 bg-gradient-to-br from-surface-secondary/80 to-bg-base/80 backdrop-blur-sm transition-all duration-1000 ease-out opacity-0 animate-fade-in flex items-center justify-center"
+            className="relative w-full h-full rounded-lg overflow-hidden border border-white/20 bg-linear-to-br from-surface-secondary/80 to-bg-base/80 backdrop-blur-sm transition-all duration-1000 ease-out opacity-0 animate-fade-in flex items-center justify-center"
         >
             {/* Canvas - centrado con borde negro */}
             <canvas
@@ -480,7 +480,7 @@ export default function SystemArchitecture() {
             {/* Scanline effect */}
             <div className="absolute inset-0 pointer-events-none opacity-10">
                 <div
-                    className="w-full h-[2px] bg-gradient-to-r from-transparent via-white to-transparent"
+                    className="w-full h-0.5 bg-linear-to-r from-transparent via-white to-transparent"
                     style={{
                         animation: "scanline 3s linear infinite"
                     }}

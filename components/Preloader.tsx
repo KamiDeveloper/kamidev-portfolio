@@ -78,7 +78,7 @@ export default function Preloader() {
           <line x1="90" y1="90" x2="70" y2="70" stroke="#666666" strokeWidth="0.5" className="path-draw" />
           <line x1="10" y1="90" x2="30" y2="70" stroke="#666666" strokeWidth="0.5" className="path-draw" />
         </svg>
-        <div className="absolute bottom-[-40px] left-0 w-full text-center">
+        <div className="absolute -bottom-10 left-0 w-full text-center">
           <span className="font-display text-xs tracking-[0.3em] uppercase text-text-secondary animate-pulse">
             {dict.preloader.text}
           </span>

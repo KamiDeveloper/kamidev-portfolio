@@ -192,7 +192,7 @@ export default function About() {
         </div>
 
         {/* Section 2: The Artist - Biography with Photo */}
-        <div className="relative h-screen flex items-end justify-center bg-gradient-to-t from-bg-base via-surface-tertiary to-surface-secondary overflow-hidden">
+        <div className="relative h-screen flex items-end justify-center bg-linear-to-t from-bg-base via-surface-tertiary to-surface-secondary overflow-hidden">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {/* Gradient Orbs */}
@@ -220,7 +220,7 @@ export default function About() {
               className="object-cover object-center grayscale opacity-80"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/80 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-bg-base via-bg-base/80 to-transparent" />
           </div>
 
           {/* Content Container */}
@@ -230,7 +230,7 @@ export default function About() {
             <div className="about-photo-reveal hidden md:flex relative md:w-5/12 h-[80%] items-end">
               <div className="relative w-full h-full group">
                 {/* Glowing Frame Effect */}
-                <div className="absolute -inset-1 bg-gradient-to-t from-accent-glow via-gray-600 to-transparent opacity-0 group-hover:opacity-30 blur-xl transition-all duration-700" />
+                <div className="absolute -inset-1 bg-linear-to-t from-accent-glow via-gray-600 to-transparent opacity-0 group-hover:opacity-30 blur-xl transition-all duration-700" />
 
                 {/* Main Photo Container */}
                 <div className="photo-container relative w-full h-full overflow-hidden bg-black">
@@ -244,7 +244,7 @@ export default function About() {
                   />
 
                   {/* Overlay Gradient on Hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-accent-glow/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="absolute inset-0 bg-linear-to-t from-accent-glow/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                   {/* Corner Accents - Animated */}
                   <div className="corner-tl absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-accent-glow opacity-70 group-hover:w-24 group-hover:h-24 transition-all duration-500" />

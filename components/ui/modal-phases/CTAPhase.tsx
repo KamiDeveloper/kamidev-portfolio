@@ -28,7 +28,7 @@ export default function CTAPhase({ title, links, features }: CTAPhaseProps) {
                                 key={index}
                                 className="flex gap-3 text-text-secondary text-sm leading-relaxed"
                             >
-                                <span className="text-accent-glow mt-1 flex-shrink-0">•</span>
+                                <span className="text-accent-glow mt-1 shrink-0">•</span>
                                 <span>{feature}</span>
                             </li>
                         ))}

@@ -285,7 +285,7 @@ export default function Navbar() {
         })}
 
         {/* Decorative vertical line */}
-        <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+        <div className="absolute left-0 top-0 bottom-0 w-px bg-linear-to-b from-transparent via-white/10 to-transparent" />
       </nav>
 
       {/* Mobile Sidebar (visible after scrolling past hero) */}

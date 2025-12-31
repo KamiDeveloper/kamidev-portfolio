@@ -185,7 +185,7 @@ export default function TechStack() {
               {dict.stack.title}
             </h2>
             {/* Large background text */}
-            <div className="absolute -top-8 -left-4 text-[180px] md:text-[220px] font-display font-bold text-white/[0.02] leading-none pointer-events-none select-none">
+            <div className="absolute -top-8 -left-4 text-[180px] md:text-[220px] font-display font-bold text-white/2 leading-none pointer-events-none select-none">
               STACK
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function TechStack() {
           {TECH_ITEMS.map((item, index) => (
             <div
               key={index}
-              className="tech-card group relative p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-surface-secondary/40 to-surface-secondary/20 border border-white/10 hover:border-white/30 transition-all duration-700 overflow-hidden backdrop-blur-sm will-change-transform"
+              className="tech-card group relative p-6 sm:p-8 rounded-3xl bg-linear-to-br from-surface-secondary/40 to-surface-secondary/20 border border-white/10 hover:border-white/30 transition-all duration-700 overflow-hidden backdrop-blur-sm will-change-transform"
               style={{ transformOrigin: "center center" }}
             >
               {/* Animated gradient overlay */}
@@ -234,7 +234,7 @@ export default function TechStack() {
                 </div>
               )}
 
-              <div className="relative z-10 flex flex-col h-full justify-between min-h-[140px] sm:min-h-[160px]">
+              <div className="relative z-10 flex flex-col h-full justify-between min-h-[140px] sm:min-h-40">
                 <div className="flex justify-between items-start mb-8 sm:mb-12">
                   <span className="tech-number text-[10px] sm:text-xs font-mono text-text-secondary/60 uppercase tracking-[0.2em] font-bold">
                     {String(index + 1).padStart(2, '0')}
