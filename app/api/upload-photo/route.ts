@@ -29,7 +29,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
   try {
     // Obtener el FormData de la request
     const formData = await request.formData();
-    // @ts-expect-error - FormData.get exists at runtime
     const file = formData.get('file') as File | null;
     
     if (!file) {
