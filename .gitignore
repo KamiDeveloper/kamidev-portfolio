@@ -47,8 +47,12 @@ next-env.d.ts
 
 # KamiApp
 /kami-app/
+/kami-backend/
+
+
 .vercel
 .env*.local
+
 
 # Firebase
 /firebase-debug.log

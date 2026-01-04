@@ -103,7 +103,7 @@ export default function Footer() {
     }
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("https://kami-backend-6ra6.onrender.com/api/v1/portfolio/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
